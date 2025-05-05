@@ -1,0 +1,20 @@
+Target dependency graph (8 targets)
+Target 'Pods-RunnerTests' in project 'Pods'
+➜ Explicit dependency on target 'Pods-Runner' in project 'Pods'
+Target 'Pods-Runner' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+➜ Explicit dependency on target 'audio_session' in project 'Pods'
+➜ Explicit dependency on target 'just_audio' in project 'Pods'
+➜ Explicit dependency on target 'path_provider_foundation' in project 'Pods'
+➜ Explicit dependency on target 'pedometer' in project 'Pods'
+Target 'pedometer' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+Target 'path_provider_foundation' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+➜ Explicit dependency on target 'path_provider_foundation-path_provider_foundation_privacy' in project 'Pods'
+Target 'path_provider_foundation-path_provider_foundation_privacy' in project 'Pods' (no dependencies)
+Target 'just_audio' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+Target 'audio_session' in project 'Pods'
+➜ Explicit dependency on target 'Flutter' in project 'Pods'
+Target 'Flutter' in project 'Pods' (no dependencies)
