@@ -1,12 +1,11 @@
-
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:onward/screens/achievements_screen.dart';
+import 'package:onward/screens/profile_screen.dart';
 import 'package:onward/widgets/mini_player.dart';
 import 'package:pedometer/pedometer.dart';
 import 'dart:async';
-
 
 import 'constantes.dart';
 
@@ -61,16 +60,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     });
   }
 
-
-
   Future<void> initPlatformState() async {
-    // if (Platform.isAndroid) {
-    //   bool granted = await _checkActivityRecognitionPermission();
-    //   if (!granted) {
-    //     // Mostrar mensaje al usuario
-    //   }
-    // } Lo estoy probando con iphone
-
     _pedestrianStatusStream = Pedometer.pedestrianStatusStream;
     _pedestrianStatusStream.listen(onPedestrianStatusChanged)
         .onError(onPedestrianStatusError);
@@ -78,9 +68,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     _stepCountStream = Pedometer.stepCountStream;
     _stepCountStream.listen(onStepCount).onError(onStepCountError);
   }
-
-
-
 
   @override
   void dispose() {
@@ -91,69 +78,118 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    // Detectar la orientación actual
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+
     return Scaffold(
-      appBar: AppBar(
-
-        leading: const Icon(Icons.person),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const AchievementsScreen(),
-                ),
-              );
-            },
-            icon: const Icon(Icons.gamepad),
-          ),
-
-
-        ],
-
-        backgroundColor: Color2,
-
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            // Imagen de fondo
-            Center(
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width, // 80% del ancho de pantalla
-                child: Lottie.asset(
-                  'assets/FootWalk.json',
-                  fit: BoxFit.contain,
-                  controller: _controller,
-                  onLoaded: (composition) {
-                    _controller
-                      ..duration = composition.duration
-                      ..repeat();
-                  },
+        appBar: PreferredSize(
+          // Reducir altura del AppBar en modo horizontal
+          preferredSize: Size.fromHeight(isLandscape ? 60.0 : 60.0),
+          child: AppBar(
+            leading: IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.person),
+              iconSize: 48.0, // Aquí defines el tamaño en píxeles
+            ),
+            actions: [
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const AchievementsScreen(),
+                    ),
+                  );
+                },
+                icon: Image.asset(
+                  'assets/achievement.png', // Asegúrate que el path sea correcto
+                  width: 52, // Puedes ajustar el tamaño
+                  height: 52,
                 ),
               ),
-            ),
 
-            Text(
-                _steps,
-                style: TextStyle(
-                  fontSize: _steps.length < 10 ? 60 : 25,
-                  fontWeight: FontWeight.bold,
-                  color: Color2,
-                ),
-            ),
-            Text('Pasos'),
-            // Positioned(
-            //   left: 0,
-            //   right: 0,
-            //   bottom: 0,
-            //   child: MiniPlayer(audioPlayer: _audioPlayer),
-            // ),
-
-          ],
+            ],
+            //backgroundColor: Color3,
+          ),
         ),
-      ),
+        body: SingleChildScrollView(
 
+          child: Center(
+            child: isLandscape
+            // Diseño para orientación horizontal
+                ? Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                // Animación a la izquierda
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  child: Lottie.asset(
+                    'assets/FootWalk.json',
+                    fit: BoxFit.contain,
+                    controller: _controller,
+                    onLoaded: (composition) {
+                      _controller
+                        ..duration = composition.duration
+                        ..repeat();
+                    },
+                  ),
+                ),
+                // Contador de pasos a la derecha
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      _steps,
+                      style: TextStyle(
+                        fontSize: _steps.length < 6 ? 60 : 25,
+                        fontWeight: FontWeight.bold,
+                        color: Color2,
+                      ),
+                    ),
+                    Text('Pasos'),
+                  ],
+                ),
+              ],
+            )
+            // Diseño para orientación vertical (original)
+                : Column(
+              children: [
+                // Imagen de fondo
+                Center(
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: Lottie.asset(
+                      'assets/FootWalk.json',
+                      fit: BoxFit.contain,
+                      controller: _controller,
+                      onLoaded: (composition) {
+                        _controller
+                          ..duration = composition.duration
+                          ..repeat();
+                      },
+                    ),
+                  ),
+                ),
+                Text(
+                  _steps,
+                  style: TextStyle(
+                    fontSize: _steps.length < 6 ? 60 : 25,
+                    fontWeight: FontWeight.bold,
+                    color: Color2,
+                  ),
+                ),
+                Text('Pasos'),
+              ],
+            ),
+          ),
+        )
     );
   }
 }

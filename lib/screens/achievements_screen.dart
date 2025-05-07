@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import '../widgets/achievement_list.dart';
+import 'package:flutter/services.dart';
+
 
 class AchievementsScreen extends StatefulWidget {
   const AchievementsScreen({super.key});
@@ -16,12 +19,24 @@ class _AchievementsScreenState extends State<AchievementsScreen>
   @override
   void initState() {
     super.initState();
+    // Bloquear sólo en vertical
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     _controller = AnimationController(vsync: this);
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    // Restaurar la orientación permitida al salir de la pantalla
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
     super.dispose();
   }
 
@@ -88,7 +103,8 @@ class _AchievementsScreenState extends State<AchievementsScreen>
             top: 40, // Distancia desde arriba (ajusta según tu diseño)
             left: 16, // Distancia desde la izquierda
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white, size: 30),
+              icon: const Icon(CupertinoIcons.arrow_left_circle_fill,
+                   color: Colors.white, size: 30),
               onPressed: () {
                 Navigator.pop(context); // Regresa a la pantalla anterior
               },
