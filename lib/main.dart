@@ -1,9 +1,16 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:onward/home.dart';
 import 'package:onward/screens/medallas.dart';
+import 'package:onward/screens/register_screen.dart';
 import 'package:onward/welcome.dart';
 import '/screens/achievements_screen.dart';
-void main() {
+import 'firebase_options.dart';
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // hace que Flutter esté completamente listo para usar cosas del sistema antes de que corra tu app, especialmente para inicializar servicios asíncronos como Firebase.
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -33,7 +40,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const Home(),
+      home: const RegisterScreen(),
     );
   }
 }

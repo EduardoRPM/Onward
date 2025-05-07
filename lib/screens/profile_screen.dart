@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../constantes.dart';
+
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -79,14 +81,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 52,
+                    height: 52,
                     decoration: const BoxDecoration(
                       color: Colors.transparent,
                     ),
                     child: IconButton(
                       icon: const Icon(CupertinoIcons.arrow_left_circle_fill,
-                          color: Colors.black, size: 48),
+                          color: Colors.black,
+                          size: 52),
                       onPressed: () {
                         Navigator.pop(context); // Regresa a la pantalla anterior
                       },
@@ -113,8 +116,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             height: 120,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 4),
-                              color: Colors.white24,
+                              border: Border.all(color: Color1, width: 4),
+                              color: Color2,
                             ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(60),
@@ -126,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   : const Icon(
                                 CupertinoIcons.person_alt,
                                 size: 60,
-                                color: Colors.white,
+                                color: Color1,
                               ),
                             ),
                           ),
@@ -152,7 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 child: const Icon(
                                   CupertinoIcons.camera_fill,
                                   size: 18,
-                                  color: Color(0xFF5DADE2),
+                                  color: Color3,
                                 ),
                               ),
                             ),
@@ -168,7 +171,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Color1,
                         ),
                       ),
                       Text(
@@ -247,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             Icon(
                               CupertinoIcons.star_fill,
                               size: 28,
-                              color: const Color(0xFF5DADE2),
+                              color: Color3,
                             ),
                           ],
                         ),
@@ -271,13 +274,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     const Icon(
                       CupertinoIcons.square_arrow_right,
-                      color: Color(0xFF5DADE2),
+                      color: Color3,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'Cerrar Sesión',
                       style: TextStyle(
-                        color: const Color(0xFF5DADE2),
+                        color: Color3,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

@@ -104,7 +104,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
             left: 16, // Distancia desde la izquierda
             child: IconButton(
               icon: const Icon(CupertinoIcons.arrow_left_circle_fill,
-                   color: Colors.white, size: 30),
+                   color: Colors.white, size: 52),
               onPressed: () {
                 Navigator.pop(context); // Regresa a la pantalla anterior
               },

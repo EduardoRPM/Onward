@@ -39,6 +39,9 @@ dependencies:
   just_audio: ^0.9.36
   audio_session: ^0.1.10
   image_picker:
+  firebase_core: ^3.13.0
+  firebase_auth: ^5.5.3
+  firebase_ui_auth: ^1.16.1
 
 dev_dependencies:
   flutter_test:
