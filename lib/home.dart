@@ -4,6 +4,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:onward/screens/achievements_screen.dart';
 import 'package:onward/screens/profile_screen.dart';
+import 'package:onward/utils/singleton.dart';
 import 'package:onward/widgets/mini_player.dart';
 import 'package:pedometer/pedometer.dart';
 import 'dart:async';
@@ -30,15 +31,19 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     super.initState();
     _audioPlayer = AudioPlayer();
     _controller = AnimationController(vsync: this);
+
+    _steps = StepData().steps.toString();
     initPlatformState();
   }
 
   void onStepCount(StepCount event) {
     print(event);
     setState(() {
+      StepData().steps = event.steps;  // Guarda los pasos en el singleton
       _steps = event.steps.toString();
     });
   }
+
 
   void onPedestrianStatusChanged(PedestrianStatus event) {
     print(event);

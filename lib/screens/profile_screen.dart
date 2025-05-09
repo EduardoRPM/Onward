@@ -1,9 +1,11 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../constantes.dart';
+import '../utils/singleton.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -13,9 +15,9 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final String name = "Ericka";
-  final String username = "@Ericka";
-  final int steps = 8322;
+  final String name = "Eduardo Pérez";
+  final String username = "@Eduardox";
+  final String steps = StepData().steps.toString();
   final int achievements = 4;
 
   File? _profileImage;
@@ -41,7 +43,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void _handleLogout() {
-    // Implementar lógica de cierre de sesión aquí
     showCupertinoDialog(
       context: context,
       builder: (context) => CupertinoAlertDialog(
@@ -55,18 +56,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
           CupertinoDialogAction(
             isDestructiveAction: true,
             child: const Text('Cerrar Sesión'),
-            onPressed: () {
-              Navigator.pop(context);
-              // Aquí iría la lógica real de cierre de sesión
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Sesión cerrada')),
-              );
+            onPressed: () async {
+              Navigator.pop(context); // Cierra el diálogo primero
+
+              await FirebaseAuth.instance.signOut(); // Cierra sesión en Firebase
+
+              // Redirige al usuario a la pantalla de inicio de sesión
+              Navigator.pushReplacementNamed(context, '/welcome');
             },
           ),
         ],
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {

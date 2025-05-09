@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:onward/screens/singIn_logIn_screen.dart';
 import 'constantes.dart';
 import 'inicioSesion.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
 import 'package:firebase_ui_auth/firebase_ui_auth.dart';
-
 
 class Welcome extends StatefulWidget {
   const Welcome({super.key});
@@ -26,66 +25,68 @@ class _WelcomeState extends State<Welcome> {
               fit: BoxFit.cover,
             ),
           ),
-          // Botón Iniciar Sesión
-          Positioned(
-            top: 95,
-            left: 38,
-            child: SizedBox(
-              width: 186,
-              height: 31,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  backgroundColor: Color1,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Iniciosesion()),
-                  );
-                },
-                child: const Text(
-                  'Iniciar Sesión',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+          // Botones al fondo
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 60, left: 40, right: 40),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Botón Login
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                          const SinginLoginScreen(isLogin: true),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.blue.shade700,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: const Text(
+                      'Login',
+                      style:
+                      TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-              ),
-            ),
-          ),
-          // Botón Registrarse
-          Positioned(
-            top: 135,
-            left: 38,
-            child: SizedBox(
-              width: 186,
-              height: 31,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  side: const BorderSide(
-                    color: Color1,
-                    width: 2,
+                  const SizedBox(height: 20),
+                  // Botón Register
+                  OutlinedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                          const SinginLoginScreen(isLogin: false),
+                        ),
+                      );
+                    },
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(color: Colors.white, width: 2),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: const Text(
+                      'Register',
+                      style: TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const Iniciosesion()),
-                  );
-                },
-                child: const Text(
-                  'Registrarse',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Color1,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                ],
               ),
             ),
           ),
