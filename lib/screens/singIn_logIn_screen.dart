@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:onward/home.dart';
+
+import '../services/auth_service.dart';
 
 class SinginLoginScreen extends StatefulWidget {
   final bool isLogin;
@@ -55,19 +56,14 @@ class _LoginState extends State<SinginLoginScreen> {
             password: _passwordController.text,
           );
         } else {
-          // Register with email and password
-          final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: _emailController.text.trim(),
-            password: _passwordController.text,
+          // Registro completo usando AuthService
+          await AuthService().registrarUsuario(
+            nombre: _nameController.text.trim(),
+            mail: _emailController.text.trim(),
+            username: _usernameController.text.trim(),
+            password: _passwordController.text.trim(),
           );
 
-          // Store additional user data in Firestore
-          // await FirebaseFirestore.instance.collection('users').doc(userCredential.user!.uid).set({
-          //   'name': _nameController.text.trim(),
-          //   'username': _usernameController.text.trim(),
-          //   'email': _emailController.text.trim(),
-          //   'createdAt': FieldValue.serverTimestamp(),
-          // });
         }
 
         // Navigate to home page on success
