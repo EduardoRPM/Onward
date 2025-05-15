@@ -22,7 +22,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   late final Stream<StepCount> _stepCountStream;
   late final Stream<PedestrianStatus> _pedestrianStatusStream;
   late final AnimationController _controller;
-  late final AudioPlayer _audioPlayer;
+
+  StreamSubscription<StepCount>? _stepCountSubscription;
+  int _baseSteps = -1;                   // valor inicial aún no capturado
+  int _lastSavedLocal = 0;
+
   int _currentSteps = 0; // Pasos detectados por el sensor en tiempo real
   int _dailyStepCountFromFirebase = 0; // Pasos cargados de Firebase para hoy
   int _lastSavedSteps = 0;
@@ -34,10 +38,26 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
-    _initPlatformState();
+    //_initPlatformState();
     _loadInitialDailySteps(); // Cargar los pasos iniciales de Firebase
     _loadDailyStepsHistory(); // Cargar el historial diario (solo el día actual por ahora)
+    _startListeningToSteps();
   }
+
+  void _startListeningToSteps() {
+    // Obtiene el stream de pasos
+    _stepCountSubscription = Pedometer.stepCountStream.listen(
+      _onStepCount,
+      onError: (error) {
+        print('Error al escuchar pasos: $error');
+      },
+      onDone: () {
+        print('Stream de pasos cerrado');
+      },
+      cancelOnError: true,
+    );
+  }
+
 
   Future<void> _loadInitialDailySteps() async {
     final userId = StepData().userId;
@@ -64,32 +84,60 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     });
   }
 
-  Future<void> _initPlatformState() async {
-    _pedestrianStatusStream = Pedometer.pedestrianStatusStream;
-    // _pedestrianStatusStream.listen(_onPedestrianStatusChanged, onError: _onPedestrianStatusError);
+  // Future<void> _initPlatformState() async {
+  //   _pedestrianStatusStream = Pedometer.pedestrianStatusStream;
+  //   // _pedestrianStatusStream.listen(_onPedestrianStatusChanged, onError: _onPedestrianStatusError);
+  //
+  //   _stepCountStream = Pedometer.stepCountStream;
+  //   _stepCountStream.listen(_onStepCount, onError: _onStepCountError);
+  // }
 
-    _stepCountStream = Pedometer.stepCountStream;
-    _stepCountStream.listen(_onStepCount, onError: _onStepCountError);
-  }
 
   void _onStepCount(StepCount event) {
     if (!mounted) return;
+
+    // 1) Captura el offset solo una vez
+    if (_baseSteps < 0) {
+      _baseSteps = event.steps;
+    }
+
+    // 2) Calcula solo los nuevos pasos desde que abriste la pantalla
+    final newSteps = event.steps - _baseSteps;
+
     setState(() {
-      _currentSteps = event.steps;
-      _steps = _stepsDisplay;
+      _currentSteps = newSteps;
+      // suma pasos del día (Firebase) + pasos de esta sesión
+      _steps = (_dailyStepCountFromFirebase + _currentSteps).toString();
     });
 
-    final userId = StepData().userId;
-    if (userId.isNotEmpty) {
-      if ((event.steps - _lastSavedSteps) >= 10) {
-        StepService().saveSteps(userId, event.steps);
-        _lastSavedSteps = event.steps;
-        // Recargar los pasos diarios de Firebase para la UI
-        _loadInitialDailySteps();
-        // También podrías optar por actualizar _dailyStepCountFromFirebase directamente
-      }
+    // 3) Guarda en Firestore cada 10 pasos nuevos
+    if ((newSteps - _lastSavedLocal) >= 10) {
+      final totalToday = _dailyStepCountFromFirebase + newSteps;
+      StepService().saveSteps(StepData().userId, totalToday);
+      _lastSavedLocal = newSteps;
+      // Opcional: recarga la UI desde Firestore si quieres asegurar consistencia
+      // _loadInitialDailySteps();
     }
   }
+
+  // void _onStepCount(StepCount event) {
+  //   if (!mounted) return;
+  //   setState(() {
+  //     _currentSteps = event.steps;
+  //     _steps = _stepsDisplay;
+  //   });
+  //
+  //   final userId = StepData().userId;
+  //   if (userId.isNotEmpty) {
+  //     if ((event.steps - _lastSavedSteps) >= 10) {
+  //       StepService().saveSteps(userId, event.steps);
+  //       _lastSavedSteps = event.steps;
+  //       // Recargar los pasos diarios de Firebase para la UI
+  //       _loadInitialDailySteps();
+  //       // También podrías optar por actualizar _dailyStepCountFromFirebase directamente
+  //     }
+  //   }
+  // }
 
   // void _onPedestrianStatusChanged(PedestrianStatus event) {
   //   setState(() {
@@ -113,9 +161,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   @override
   void dispose() {
-    _audioPlayer.dispose();
     _controller.dispose();
     super.dispose();
+    _stepCountSubscription?.cancel();
   }
 
   @override
@@ -236,3 +284,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     );
   }
 }
+
+
+

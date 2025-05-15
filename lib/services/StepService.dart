@@ -34,7 +34,7 @@
 
       try {
         final stepsSnapshot = await _firestore
-            .collection('Usuario')
+            .collection('Usuarios')
             .doc(userId)
             .collection('Pasos')
             .doc(formattedDate)
@@ -57,7 +57,7 @@
       List<Map<String, dynamic>> allStepsData = [];
       try {
         final stepsCollection = await _firestore
-            .collection('Usuario')
+            .collection('Usuarios')
             .doc(userId)
             .collection('Pasos')
             .get();
