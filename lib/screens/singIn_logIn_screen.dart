@@ -17,7 +17,7 @@ class SinginLoginScreen extends StatefulWidget {
 }
 
 class _LoginState extends State<SinginLoginScreen> {
-  final _formKey = GlobalKey<FormState>(); //Es una llave única que le permite a Flutter acceder al estado interno del widget <Form>, como validar campos, resetear el formulario, o guardar valores.
+  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -28,7 +28,7 @@ class _LoginState extends State<SinginLoginScreen> {
   late bool _isLogin;
   String? _errorMessage;
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance; // Inicializa _firestore
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
   void initState() {
@@ -55,44 +55,45 @@ class _LoginState extends State<SinginLoginScreen> {
 
       try {
         UserCredential? userCredential;
-        if (_isLogin) { // Si estamos en modo de inicio de sesiónn
+
+        if (_isLogin) {
+          // Login existing user
           userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
-        } else { // Si estamos en modo de registro
+        } else {
+          // Register new user
           await AuthService().registrarUsuario(
             nombre: _nameController.text.trim(),
             mail: _emailController.text.trim(),
             username: _usernameController.text.trim(),
             password: _passwordController.text.trim(),
           );
-          // Después del registro, también podrías querer loguear al usuario directamente
           userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
             email: _emailController.text.trim(),
             password: _passwordController.text.trim(),
           );
+
+          // Inicializar pasos solo para nuevos usuarios
+          final now = DateTime.now();
+          final formattedDate = DateFormat('yyyy-MM-dd').format(now);
+          await _firestore
+              .collection('Usuarios')
+              .doc(userCredential.user!.uid)
+              .collection('Pasos')
+              .doc(formattedDate)
+              .set({'date': now, 'steps': 0});
         }
 
         if (userCredential?.user != null && mounted) {
-          // Forzar la carga de datos frescos de Firestore y actualizar SharedPreferences
+          // Cargar datos de usuario antes de navegar
           await UserDataService().cargarDatosUsuario(forceReload: true);
-          StepData().userId = userCredential!.user!.uid; // Actualiza el userId aquí
-
-          // Crear registro inicial de pasos para el nuevo usuario
-          final now = DateTime.now();
-          final formattedDate = DateFormat('yyyy-MM-dd').format(now);
-          final stepsDocRef = _firestore
-              .collection('Usuarios')
-              .doc(userCredential.user!.uid) // Usar el UID del nuevo usuario
-              .collection('Pasos')
-              .doc(formattedDate);
-
-          await stepsDocRef.set({'date': now, 'steps': 0});
+          StepData().userId = userCredential!.user!.uid;
 
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const Home()),
-                (route) => false, // Remove all previous routes
+                (route) => false,
           );
         }
       } on FirebaseAuthException catch (e) {

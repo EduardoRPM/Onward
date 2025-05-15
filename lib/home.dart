@@ -27,6 +27,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   int _baseSteps = -1;                   // valor inicial aún no capturado
   int _lastSavedLocal = 0;
 
+
+  String _currentDate = '';
+
+
   int _currentSteps = 0; // Pasos detectados por el sensor en tiempo real
   int _dailyStepCountFromFirebase = 0; // Pasos cargados de Firebase para hoy
   int _lastSavedSteps = 0;
@@ -61,16 +65,21 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   Future<void> _loadInitialDailySteps() async {
     final userId = StepData().userId;
-    print('Home screen loaded with userId: $userId'); // <--- Agregar esta línea
     if (userId.isEmpty) return;
 
+    final now = DateTime.now();
+    final today = DateFormat('yyyy-MM-dd').format(now);
     final steps = await StepService().getDailySteps(userId);
+
     setState(() {
       _dailyStepCountFromFirebase = steps;
-
-      _steps = _stepsDisplay;
+      _currentDate = today;
+      _baseSteps = -1;      // para que en el primer evento del sensor fije bien el offset
+      _lastSavedLocal = 0;  // también reinicia el umbral local
+      _steps = (_dailyStepCountFromFirebase).toString();
     });
   }
+
 
   Future<void> _loadDailyStepsHistory() async {
     final userId = StepData().userId;
@@ -96,29 +105,31 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   void _onStepCount(StepCount event) {
     if (!mounted) return;
 
-    // 1) Captura el offset solo una vez
-    if (_baseSteps < 0) {
-      _baseSteps = event.steps;
+    final now = DateTime.now();
+    final today = DateFormat('yyyy-MM-dd').format(now);
+
+    if (today != _currentDate) {
+      // Pasó de día: carga pasos de hoy (cero al inicio) y actualiza fecha
+      _loadInitialDailySteps();
+      return;
     }
 
-    // 2) Calcula solo los nuevos pasos desde que abriste la pantalla
+    // … resto de lógica …
+    if (_baseSteps < 0) _baseSteps = event.steps;
     final newSteps = event.steps - _baseSteps;
 
     setState(() {
       _currentSteps = newSteps;
-      // suma pasos del día (Firebase) + pasos de esta sesión
       _steps = (_dailyStepCountFromFirebase + _currentSteps).toString();
     });
 
-    // 3) Guarda en Firestore cada 10 pasos nuevos
     if ((newSteps - _lastSavedLocal) >= 10) {
       final totalToday = _dailyStepCountFromFirebase + newSteps;
       StepService().saveSteps(StepData().userId, totalToday);
       _lastSavedLocal = newSteps;
-      // Opcional: recarga la UI desde Firestore si quieres asegurar consistencia
-      // _loadInitialDailySteps();
     }
   }
+
 
   // void _onStepCount(StepCount event) {
   //   if (!mounted) return;
