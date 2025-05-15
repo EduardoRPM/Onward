@@ -31,52 +31,29 @@ class AchievementList extends StatelessWidget {
           ),
         ],
       ),
-      Achievement(
-        id: 'early-bird',
-        title: 'Early Bird',
-        description: 'Complete walks in the morning',
-        icon: Icons.access_alarm,
-        levels: [
-          AchievementLevel(
-            level: 1,
-            description: 'Complete a walk before 8 AM',
-            completed: true,
-          ),
-          AchievementLevel(
-            level: 2,
-            description: 'Complete 5 walks before 8 AM',
-            completed: false,
-          ),
-          AchievementLevel(
-            level: 3,
-            description: 'Complete 20 walks before 8 AM',
-            completed: false,
-          ),
-        ],
-      ),
-      Achievement(
-        id: 'brave-rain',
-        title: 'Brave in the Rain',
-        description: "Don't let weather stop you",
-        icon: Icons.cloud_outlined,
-        levels: [
-          AchievementLevel(
-            level: 1,
-            description: 'Walk 2,000 steps during rain',
-            completed: true,
-          ),
-          AchievementLevel(
-            level: 2,
-            description: 'Walk 5,000 steps during rain',
-            completed: false,
-          ),
-          AchievementLevel(
-            level: 3,
-            description: 'Walk 10,000 steps during heavy rain',
-            completed: false,
-          ),
-        ],
-      ),
+      // Achievement(
+      //   id: 'brave-rain',
+      //   title: 'Brave in the Rain',
+      //   description: "Don't let weather stop you",
+      //   icon: Icons.cloud_outlined,
+      //   levels: [
+      //     AchievementLevel(
+      //       level: 1,
+      //       description: 'Walk 2,000 steps during rain',
+      //       completed: true,
+      //     ),
+      //     AchievementLevel(
+      //       level: 2,
+      //       description: 'Walk 5,000 steps during rain',
+      //       completed: false,
+      //     ),
+      //     AchievementLevel(
+      //       level: 3,
+      //       description: 'Walk 10,000 steps during heavy rain',
+      //       completed: false,
+      //     ),
+      //   ],
+      // ),
       Achievement(
         id: 'explorer',
         title: '5K Explorer',
