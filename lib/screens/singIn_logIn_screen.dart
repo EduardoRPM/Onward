@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart'; // Importa FirebaseFirestore
+import 'package:intl/intl.dart'; // Importa DateFormat
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:onward/home.dart';
 
 import '../services/auth_service.dart';
+import '../utils/singleton.dart';
 
 class SinginLoginScreen extends StatefulWidget {
   final bool isLogin;
@@ -14,7 +17,7 @@ class SinginLoginScreen extends StatefulWidget {
 }
 
 class _LoginState extends State<SinginLoginScreen> {
-  final _formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>(); //Es una llave única que le permite a Flutter acceder al estado interno del widget <Form>, como validar campos, resetear el formulario, o guardar valores.
   final _nameController = TextEditingController();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
@@ -24,6 +27,8 @@ class _LoginState extends State<SinginLoginScreen> {
   bool _isLoading = false;
   late bool _isLogin;
   String? _errorMessage;
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance; // Inicializa _firestore
 
   @override
   void initState() {
@@ -49,25 +54,42 @@ class _LoginState extends State<SinginLoginScreen> {
       });
 
       try {
-        if (_isLogin) {
-          // Login with email and password
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        UserCredential? userCredential;
+        if (_isLogin) { // Si estamos en modo de inicio de sesiónn
+          userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
-        } else {
-          // Registro completo usando AuthService
+        } else { // Si estamos en modo de registro
           await AuthService().registrarUsuario(
             nombre: _nameController.text.trim(),
             mail: _emailController.text.trim(),
             username: _usernameController.text.trim(),
             password: _passwordController.text.trim(),
           );
-
+          // Después del registro, también podrías querer loguear al usuario directamente
+          userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
         }
 
-        // Navigate to home page on success
-        if (mounted) {
+        if (userCredential?.user != null && mounted) {
+          // Forzar la carga de datos frescos de Firestore y actualizar SharedPreferences
+          await UserDataService().cargarDatosUsuario(forceReload: true);
+          StepData().userId = userCredential!.user!.uid; // Actualiza el userId aquí
+
+          // Crear registro inicial de pasos para el nuevo usuario
+          final now = DateTime.now();
+          final formattedDate = DateFormat('yyyy-MM-dd').format(now);
+          final stepsDocRef = _firestore
+              .collection('Usuarios')
+              .doc(userCredential.user!.uid) // Usar el UID del nuevo usuario
+              .collection('Pasos')
+              .doc(formattedDate);
+
+          await stepsDocRef.set({'date': now, 'steps': 0});
+
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => const Home()),
                 (route) => false, // Remove all previous routes

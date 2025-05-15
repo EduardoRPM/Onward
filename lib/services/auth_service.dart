@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../models/pasos.dart';
 import '../models/usuario.dart';
 
 class AuthService {
@@ -20,6 +21,15 @@ class AuthService {
       );
 
       final String uid = cred.user!.uid;
+
+
+      final pasos = Pasos(
+        id: uid,
+        fecha: DateTime.now(),
+        idUsuario: uid,
+        numPasos: 0,
+        refUsuario: '',
+      );
 
       // 2. Crear objeto Usuario
       final usuario = Usuario(

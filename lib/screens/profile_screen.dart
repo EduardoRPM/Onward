@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../constantes.dart';
 import '../utils/singleton.dart';
+import '../welcome.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -15,9 +16,35 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final String name = "Eduardo Pérez";
-  final String username = "@Eduardox";
-  final String steps = StepData().steps.toString();
+  String? nombre;
+  String? username;
+  String? email;
+  bool cargando = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _cargarDatos();
+  }
+
+  Future<void> _cargarDatos() async {
+    try {
+      await UserDataService().cargarDatosUsuario();
+      setState(() {
+        nombre = UserDataService().nombre;
+        username = UserDataService().username;
+        email = UserDataService().email;
+        cargando = false;
+      });
+    } catch (e) {
+      print('Error al cargar datos del usuario: $e');
+      setState(() {
+        cargando = false;
+      });
+    }
+  }
+
+  final stepData = StepData();
   final int achievements = 4;
 
   File? _profileImage;
@@ -57,12 +84,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             isDestructiveAction: true,
             child: const Text('Cerrar Sesión'),
             onPressed: () async {
-              Navigator.pop(context); // Cierra el diálogo primero
-
-              await FirebaseAuth.instance.signOut(); // Cierra sesión en Firebase
-
-              // Redirige al usuario a la pantalla de inicio de sesión
-              Navigator.pushReplacementNamed(context, '/welcome');
+              Navigator.pop(context); // Cierra el diálogo de confirmación
+              try {
+                await FirebaseAuth.instance.signOut();
+                // Después de cerrar sesión, navegar a la pantalla de bienvenida
+                await FirebaseAuth.instance.signOut();
+                await UserDataService().limpiarDatos();
+                //Navigator.pushReplacementNamed(context, '/welcome');
+                // O, si estás usando rutas MaterialPageRoute:
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Welcome()));
+              } catch (e) {
+                print('Error al cerrar sesión: $e');
+                // Puedes mostrar un mensaje de error aquí si es necesario
+              }
             },
           ),
         ],
@@ -70,9 +104,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
+    if (cargando) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -94,7 +135,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           color: Colors.black,
                           size: 52),
                       onPressed: () {
-                        Navigator.pop(context); // Regresa a la pantalla anterior
+                        Navigator.pop(context);
                       },
                     ),
                   ),
@@ -170,7 +211,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       // Name and Username
                       Text(
-                        name,
+                        nombre ?? 'Nombre desconocido',
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -178,16 +219,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                       ),
                       Text(
-                        username,
+                        username ?? 'Usuario desconocido',
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.blue.shade900,
                         ),
                       ),
+                      if (email != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Text(
+                            email!,
+                            style: const TextStyle(fontSize: 14, color: Colors.grey),
+                          ),
+                        ),
 
                       const SizedBox(height: 24),
 
-                      // Divider
                       Container(
                         height: 1,
                         width: double.infinity,
@@ -196,11 +244,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       const SizedBox(height: 24),
 
-                      // Steps Counter
                       Column(
                         children: [
                           Text(
-                            steps.toString(),
+                            stepData.steps.toString(),
                             style: const TextStyle(
                               fontSize: 80,
                               fontWeight: FontWeight.bold,
@@ -220,7 +267,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                       const SizedBox(height: 24),
 
-                      // Achievements Card
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),

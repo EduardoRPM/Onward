@@ -1,9 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:onward/screens/singIn_logIn_screen.dart';
-import 'constantes.dart';
-import 'inicioSesion.dart';
-import 'package:firebase_auth/firebase_auth.dart' hide EmailAuthProvider;
-import 'package:firebase_ui_auth/firebase_ui_auth.dart';
+import 'package:onward/utils/singleton.dart';
 
 class Welcome extends StatefulWidget {
   const Welcome({super.key});
@@ -35,12 +33,12 @@ class _WelcomeState extends State<Welcome> {
                 children: [
                   // Botón Login
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                          const SinginLoginScreen(isLogin: true),
+                              SinginLoginScreen(isLogin: true),
                         ),
                       );
                     },
@@ -67,7 +65,7 @@ class _WelcomeState extends State<Welcome> {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                          const SinginLoginScreen(isLogin: false),
+                              SinginLoginScreen(isLogin: false),
                         ),
                       );
                     },
