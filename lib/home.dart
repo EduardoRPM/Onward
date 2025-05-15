@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
@@ -19,6 +20,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+  StreamSubscription<DocumentSnapshot>? _achievementsSub;
+  List<String> _seenAchievements = [];
+
   late final Stream<StepCount> _stepCountStream;
   late final Stream<PedestrianStatus> _pedestrianStatusStream;
   late final AnimationController _controller;
@@ -46,7 +50,40 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     _loadInitialDailySteps(); // Cargar los pasos iniciales de Firebase
     _loadDailyStepsHistory(); // Cargar el historial diario (solo el día actual por ahora)
     _startListeningToSteps();
+
+    // 1) Stream de Firestore para achievements
+    final userId = StepData().userId;
+    if (userId.isNotEmpty) {
+      _achievementsSub = FirebaseFirestore.instance
+          .collection('Usuarios')
+          .doc(userId)
+          .snapshots()
+          .listen(_onUserDocChanged);
+    }
   }
+
+  void _onUserDocChanged(DocumentSnapshot snapshot) {
+    if (!snapshot.exists) return;
+
+    final data = snapshot.data() as Map<String, dynamic>;
+    final completed = data['completedAchievements'] as Map<String, dynamic>? ?? {};
+
+    // Obtener IDs actuales
+    final currentIds = completed.keys.toList();
+
+    // Filtrar los que ya vimos
+    final newOnes = currentIds.where((id) => !_seenAchievements.contains(id)).toList();
+    if (newOnes.isNotEmpty) {
+      // Guardar para no volver a notificar
+      _seenAchievements.addAll(newOnes);
+
+      // Notificar en pantalla
+      for (var id in newOnes) {
+        _showAchievementNotification(id, completed[id] as Timestamp);
+      }
+    }
+  }
+
 
   void _startListeningToSteps() {
     // Obtiene el stream de pasos
@@ -101,6 +138,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   //   _stepCountStream.listen(_onStepCount, onError: _onStepCountError);
   // }
 
+  void _showAchievementNotification(String achievementId, Timestamp completedAt) {
+    String message = '¡Nuevo logro desbloqueado: $achievementId!';
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 3),
+      ),
+    );
+    print('Logro desbloqueado: $achievementId a las ${completedAt.toDate()}');
+  }
+
 
   void _onStepCount(StepCount event) {
     if (!mounted) return;
@@ -114,7 +162,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       return;
     }
 
-    // … resto de lógica …
+
     if (_baseSteps < 0) _baseSteps = event.steps;
     final newSteps = event.steps - _baseSteps;
 
@@ -175,6 +223,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     _controller.dispose();
     super.dispose();
     _stepCountSubscription?.cancel();
+    _achievementsSub?.cancel();
   }
 
   @override

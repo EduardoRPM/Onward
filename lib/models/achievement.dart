@@ -32,3 +32,13 @@ class Achievement {
   double get progressPercentage => completedLevelsCount / totalLevelsCount;
   bool get isFullyCompleted => completedLevelsCount == totalLevelsCount;
 }
+
+String achievementTitleById(String id) {
+  switch (id) {
+    case 'first-step':    return 'First Step';
+    case 'explorer':      return '5K Explorer';
+    case 'streak-master': return 'Streak Master';
+    case 'day-night':     return 'Day & Night Walker';
+    default:              return '¡Nuevo logro!';
+  }
+}

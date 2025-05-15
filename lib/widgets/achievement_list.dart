@@ -16,17 +16,17 @@ class AchievementList extends StatelessWidget {
         levels: [
           AchievementLevel(
             level: 1,
-            description: 'Walk 1,000 steps in a day',
-            completed: true,
+            description: 'Walk 10 steps in a day',
+            completed: false,
           ),
           AchievementLevel(
             level: 2,
-            description: 'Walk 5,000 steps in a day',
-            completed: true,
+            description: 'Walk 20 steps in a day',
+            completed: false,
           ),
           AchievementLevel(
             level: 3,
-            description: 'Walk 10,000 steps in a day',
+            description: 'Walk 30 steps in a day',
             completed: false,
           ),
         ],
@@ -63,17 +63,17 @@ class AchievementList extends StatelessWidget {
           AchievementLevel(
             level: 1,
             description: 'Walk 5 kilometers total',
-            completed: true,
+            completed: false,
           ),
           AchievementLevel(
             level: 2,
             description: 'Walk 50 kilometers total',
-            completed: true,
+            completed: false,
           ),
           AchievementLevel(
             level: 3,
             description: 'Walk 100 kilometers total',
-            completed: true,
+            completed: false,
           ),
         ],
       ),
@@ -86,7 +86,7 @@ class AchievementList extends StatelessWidget {
           AchievementLevel(
             level: 1,
             description: 'Walk for 7 consecutive days',
-            completed: true,
+            completed: false,
           ),
           AchievementLevel(
             level: 2,
@@ -109,12 +109,12 @@ class AchievementList extends StatelessWidget {
           AchievementLevel(
             level: 1,
             description: 'Complete walks during daytime',
-            completed: true,
+            completed: false,
           ),
           AchievementLevel(
             level: 2,
             description: 'Complete walks during evening',
-            completed: true,
+            completed: false,
           ),
           AchievementLevel(
             level: 3,
