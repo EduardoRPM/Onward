@@ -42,11 +42,38 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+
     _controller = AnimationController(vsync: this);
-    //_initPlatformState();
-    _loadInitialDailySteps(); // Cargar los pasos iniciales de Firebase
-    _loadDailyStepsHistory(); // Cargar el historial diario (solo el día actual por ahora)
-    _startListeningToSteps();
+
+    _loadInitialDailySteps(); // Cargar pasos iniciales de Firebase
+    _loadDailyStepsHistory(); // Cargar historial de pasos
+    _startListeningToSteps(); // Iniciar escucha de pasos del sensor
+
+    // Agrega este bloque para escuchar cambios de nivel
+    final stepNotifier = Provider.of<StepNotifier>(context, listen: false);
+
+    stepNotifier.addListener(() {
+      final newLevel = stepNotifier.level;
+
+      if (newLevel > 0) {
+        // Mostramos el diálogo de logro desbloqueado
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('¡Nuevo logro!'),
+              content: Text('Has alcanzado el nivel $newLevel 🎉'),
+              actions: [
+                TextButton(
+                  child: Text('OK'),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          );
+        });
+      }
+    });
   }
 
   void _startListeningToSteps() {
