@@ -2,11 +2,20 @@
 
   import 'package:cloud_firestore/cloud_firestore.dart';
   import 'package:intl/intl.dart';
-  import '../models/stepRecord.dart';
+  import '../notifiers/step_notifier.dart';
+import 'AchievementService.dart';
 
   class StepService {
-    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final StepNotifier stepNotifier;
 
+    StepService(this.stepNotifier);
+
+
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    //final AchievementService _achievementService;
+
+    // StepService(this._achievementService);
+    StepService(this.stepNotifier);
     Future<void> saveSteps(String userId, int steps) async {
       final now = DateTime.now();
       final formattedDate = DateFormat('yyyy-MM-dd').format(now);
@@ -23,10 +32,51 @@
           'steps': steps,
         });
         print('Pasos guardados para el día: $formattedDate');
+        // await _achievementService.checkAndUnlockAchievements(userId, steps);
+        await _checkAchievements(userId, steps, formattedDate);
+
       } catch (e) {
         print('Error al guardar los pasos: $e');
       }
     }
+
+
+    Future<void> _checkAchievements(String userId, int steps, String date) async {
+      final docRef = _firestore
+          .collection('Usuarios')
+          .doc(userId)
+          .collection('Logros')
+          .doc('FirstStep');
+
+      try {
+        final doc = await docRef.get();
+        final currentLevel = doc.data()?['nivel'] ?? 0;
+
+        if (!doc.exists && steps >= 10) {
+          await docRef.set({
+            'title': 'First Step',
+            'descripcion': 'Begin your walking journey',
+            'nivel': 1,
+            'unlockedAt': FieldValue.serverTimestamp(),
+          });
+          print('Logro First Step desbloqueado: nivel 1');
+        } else if (steps >= 30 && currentLevel < 2) {
+          await docRef.update({
+            'nivel': 2,
+            'unlockedAt': FieldValue.serverTimestamp(),
+          });
+          print('Logro First Step actualizado a nivel 2');
+        }
+
+      } catch (e) {
+        print('Error al procesar logro First Step: $e');
+      }
+
+      // Agrega más logros aquí
+    }
+
+
+
 
     Future<int> getDailySteps(String userId) async {
       final now = DateTime.now();

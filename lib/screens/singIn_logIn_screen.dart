@@ -78,6 +78,8 @@ class _LoginState extends State<SinginLoginScreen> {
           // Inicializar pasos solo para nuevos usuarios
           final now = DateTime.now();
           final formattedDate = DateFormat('yyyy-MM-dd').format(now);
+
+
           await _firestore
               .collection('Usuarios')
               .doc(userCredential.user!.uid)

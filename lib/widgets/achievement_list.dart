@@ -31,52 +31,7 @@ class AchievementList extends StatelessWidget {
           ),
         ],
       ),
-      // Achievement(
-      //   id: 'brave-rain',
-      //   title: 'Brave in the Rain',
-      //   description: "Don't let weather stop you",
-      //   icon: Icons.cloud_outlined,
-      //   levels: [
-      //     AchievementLevel(
-      //       level: 1,
-      //       description: 'Walk 2,000 steps during rain',
-      //       completed: true,
-      //     ),
-      //     AchievementLevel(
-      //       level: 2,
-      //       description: 'Walk 5,000 steps during rain',
-      //       completed: false,
-      //     ),
-      //     AchievementLevel(
-      //       level: 3,
-      //       description: 'Walk 10,000 steps during heavy rain',
-      //       completed: false,
-      //     ),
-      //   ],
-      // ),
-      Achievement(
-        id: 'explorer',
-        title: '5K Explorer',
-        description: 'Reach distance milestones',
-        icon: Icons.landscape,
-        levels: [
-          AchievementLevel(
-            level: 1,
-            description: 'Walk 5 kilometers total',
-            completed: false,
-          ),
-          AchievementLevel(
-            level: 2,
-            description: 'Walk 50 kilometers total',
-            completed: false,
-          ),
-          AchievementLevel(
-            level: 3,
-            description: 'Walk 100 kilometers total',
-            completed: false,
-          ),
-        ],
-      ),
+
       Achievement(
         id: 'streak-master',
         title: 'Streak Master',
@@ -100,29 +55,75 @@ class AchievementList extends StatelessWidget {
           ),
         ],
       ),
-      Achievement(
-        id: 'day-night',
-        title: 'Day & Night Walker',
-        description: 'Walk at different times of day',
-        icon: Icons.wb_sunny,
-        levels: [
-          AchievementLevel(
-            level: 1,
-            description: 'Complete walks during daytime',
-            completed: false,
-          ),
-          AchievementLevel(
-            level: 2,
-            description: 'Complete walks during evening',
-            completed: false,
-          ),
-          AchievementLevel(
-            level: 3,
-            description: 'Complete walks at night',
-            completed: false,
-          ),
-        ],
-      ),
+      // Achievement(
+      //   id: 'brave-rain',
+      //   title: 'Brave in the Rain',
+      //   description: "Don't let weather stop you",
+      //   icon: Icons.cloud_outlined,
+      //   levels: [
+      //     AchievementLevel(
+      //       level: 1,
+      //       description: 'Walk 2,000 steps during rain',
+      //       completed: true,
+      //     ),
+      //     AchievementLevel(
+      //       level: 2,
+      //       description: 'Walk 5,000 steps during rain',
+      //       completed: false,
+      //     ),
+      //     AchievementLevel(
+      //       level: 3,
+      //       description: 'Walk 10,000 steps during heavy rain',
+      //       completed: false,
+      //     ),
+      //   ],
+      // ),
+      // Achievement(
+      //   id: 'explorer',
+      //   title: ' Explorer',
+      //   description: 'Reach distance milestones',
+      //   icon: Icons.landscape,
+      //   levels: [
+      //     AchievementLevel(
+      //       level: 1,
+      //       description: 'Walk 10 steps',
+      //       completed: false,
+      //     ),
+      //     AchievementLevel(
+      //       level: 2,
+      //       description: 'Walk 50 steps',
+      //       completed: false,
+      //     ),
+      //     AchievementLevel(
+      //       level: 3,
+      //       description: 'Walk 120 steps',
+      //       completed: false,
+      //     ),
+      //   ],
+      // ),
+      // Achievement(
+      //   id: 'day-night',
+      //   title: 'Day & Night Walker',
+      //   description: 'Walk at different times of day',
+      //   icon: Icons.wb_sunny,
+      //   levels: [
+      //     AchievementLevel(
+      //       level: 1,
+      //       description: 'Complete walks during daytime',
+      //       completed: false,
+      //     ),
+      //     AchievementLevel(
+      //       level: 2,
+      //       description: 'Complete walks during evening',
+      //       completed: false,
+      //     ),
+      //     AchievementLevel(
+      //       level: 3,
+      //       description: 'Complete walks at night',
+      //       completed: false,
+      //     ),
+      //   ],
+      // ),
     ];
 
     return ListView.builder(
