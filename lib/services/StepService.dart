@@ -1,14 +1,15 @@
 // services/step_service.dart
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import '../notifiers/step_notifier.dart';
+import 'AchievementService.dart';
 
 class StepService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final StepNotifier stepNotifier;
+  //final AchievementService _achievementService;
 
-  StepService(this.stepNotifier);
-
+  // StepService(this._achievementService);
+  StepService();
   Future<void> saveSteps(String userId, int steps) async {
     final now = DateTime.now();
     final formattedDate = DateFormat('yyyy-MM-dd').format(now);
@@ -24,15 +25,15 @@ class StepService {
         'date': now,
         'steps': steps,
       });
-
       print('Pasos guardados para el día: $formattedDate');
-
-      // Verificar y notificar logros
+      // await _achievementService.checkAndUnlockAchievements(userId, steps);
       await _checkAchievements(userId, steps, formattedDate);
+
     } catch (e) {
       print('Error al guardar los pasos: $e');
     }
   }
+
 
   Future<void> _checkAchievements(String userId, int steps, String date) async {
     final docRef = _firestore
@@ -44,35 +45,32 @@ class StepService {
     try {
       final doc = await docRef.get();
       final currentLevel = doc.data()?['nivel'] ?? 0;
-      int newLevel = currentLevel;
 
       if (!doc.exists && steps >= 10) {
-        newLevel = 1;
         await docRef.set({
           'title': 'First Step',
           'descripcion': 'Begin your walking journey',
-          'nivel': newLevel,
+          'nivel': 1,
           'unlockedAt': FieldValue.serverTimestamp(),
         });
-        print('Logro First Step desbloqueado: nivel $newLevel');
+        print('Logro First Step desbloqueado: nivel 1');
       } else if (steps >= 30 && currentLevel < 2) {
-        newLevel = 2;
         await docRef.update({
-          'nivel': newLevel,
+          'nivel': 2,
           'unlockedAt': FieldValue.serverTimestamp(),
         });
-        print('Logro First Step actualizado a nivel $newLevel');
-      }
-
-      // 🔔 Notifica si hay nuevo nivel
-      if (newLevel > currentLevel) {
-        stepNotifier.updateLevel(newLevel);
+        print('Logro First Step actualizado a nivel 2');
       }
 
     } catch (e) {
       print('Error al procesar logro First Step: $e');
     }
+
+    // Agrega más logros aquí
   }
+
+
+
 
   Future<int> getDailySteps(String userId) async {
     final now = DateTime.now();
@@ -90,7 +88,7 @@ class StepService {
         final data = stepsSnapshot.data() as Map<String, dynamic>?;
         return data?['steps'] as int? ?? 0;
       } else {
-        print('No hay pasos registrados para $formattedDate');
+        print('No data found for user $userId on $formattedDate, returning 0.'); // <-- Agregar esta línea
         return 0;
       }
     } catch (e) {
@@ -112,8 +110,7 @@ class StepService {
         final data = doc.data();
         if (data.containsKey('steps') && data.containsKey('date')) {
           allStepsData.add({
-            'date': DateFormat('yyyy-MM-dd')
-                .format((data['date'] as Timestamp).toDate()),
+            'date': DateFormat('yyyy-MM-dd').format((data['date'] as Timestamp).toDate()),
             'steps': data['steps'],
           });
         }

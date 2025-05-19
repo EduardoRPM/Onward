@@ -8,8 +8,10 @@ import 'package:onward/utils/singleton.dart';
 import 'package:pedometer/pedometer.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 import 'constantes.dart';
+import 'notifiers/step_notifier.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -163,25 +165,25 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   //Mostrar el cumplimiento del logro
-  void _checkAchievements(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("¡Subiste de nivel!"),
-          content: Text("Has alcanzado el $nivel en el logro $logro."),
-          actions: [
-            TextButton(
-              child: const Text("OK"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // void _checkAchievements(BuildContext context) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return AlertDialog(
+  //         title: const Text("¡Subiste de nivel!"),
+  //         content: Text("Has alcanzado el $nivel en el logro $logro."),
+  //         actions: [
+  //           TextButton(
+  //             child: const Text("OK"),
+  //             onPressed: () {
+  //               Navigator.of(context).pop();
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
 
   // void _showStepsSavedDialog(BuildContext context, int totalSteps) {
