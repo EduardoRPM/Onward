@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:lottie/lottie.dart';
 import 'package:onward/screens/achievements_screen.dart';
 import 'package:onward/screens/profile_screen.dart';
@@ -9,9 +8,8 @@ import 'package:pedometer/pedometer.dart';
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-
 import 'constantes.dart';
-import 'notifiers/step_notifier.dart';
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -22,6 +20,7 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
+  StreamSubscription<String>? _achievementSubscription;
   late final Stream<StepCount> _stepCountStream;
   late final Stream<PedestrianStatus> _pedestrianStatusStream;
   late final AnimationController _controller;
@@ -42,40 +41,41 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   List<Map<String, dynamic>> _dailyStepsHistory = []; // Para el historial diario
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final stepService = Provider.of<StepService>(context, listen: false);
+
+    // Escucha solo una vez para evitar múltiples suscripciones
+    _achievementSubscription?.cancel();
+    _achievementSubscription = stepService.achievementStream.listen((message) {
+      // Mostrar un AlertDialog cuando se reciba el evento
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text("¡Logro desbloqueado!"),
+          content: Text(message),
+          actions: [
+            TextButton(
+              child: Text("OK"),
+              onPressed: () => Navigator.of(ctx).pop(),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+
+  @override
   void initState() {
     super.initState();
 
     _controller = AnimationController(vsync: this);
 
     _loadInitialDailySteps(); // Cargar pasos iniciales de Firebase
-    _loadDailyStepsHistory(); // Cargar historial de pasos
+    // _loadDailyStepsHistory(); // Cargar historial de pasos
     _startListeningToSteps(); // Iniciar escucha de pasos del sensor
 
-    // Agrega este bloque para escuchar cambios de nivel
-    final stepNotifier = Provider.of<StepNotifier>(context, listen: false);
-
-    stepNotifier.addListener(() {
-      final newLevel = stepNotifier.level;
-
-      if (newLevel > 0) {
-        // Mostramos el diálogo de logro desbloqueado
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('¡Nuevo logro!'),
-              content: Text('Has alcanzado el nivel $newLevel 🎉'),
-              actions: [
-                TextButton(
-                  child: Text('OK'),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-              ],
-            ),
-          );
-        });
-      }
-    });
   }
 
   void _startListeningToSteps() {
@@ -99,7 +99,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
     final now = DateTime.now();
     final today = DateFormat('yyyy-MM-dd').format(now);
-    final steps = await StepService().getDailySteps(userId);
+    final stepService = Provider.of<StepService>(context, listen: false);
+    final steps = await stepService.getDailySteps(userId);
+
+
+    // final steps = await StepService().getDailySteps(userId);
 
     setState(() {
       _dailyStepCountFromFirebase = steps;
@@ -154,14 +158,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     if ((newSteps - _lastSavedLocal) >= 10) {
       final totalToday = _dailyStepCountFromFirebase + newSteps;
 
-      StepService().saveSteps(StepData().userId, totalToday);
+      // Usa la instancia de Provider
+      final stepService = Provider.of<StepService>(context, listen: false);
+      stepService.saveSteps(StepData().userId, totalToday);
+
       _lastSavedLocal = newSteps;
-
-      // Mostrar el diálogo de alerta
-      // _showStepsSavedDialog(context, totalToday);
-
-
     }
+
   }
 
   //Mostrar el cumplimiento del logro
@@ -251,6 +254,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     _controller.dispose();
     super.dispose();
     _stepCountSubscription?.cancel();
+    _achievementSubscription?.cancel();
   }
 
   @override

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:onward/services/StepService.dart';
 import 'package:onward/welcome.dart';
 import 'package:provider/provider.dart';
 
@@ -14,10 +15,9 @@ void main() async {
   );
 
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => StepNotifier()),
-      ],
+    Provider<StepService>(
+      create: (_) => StepService(),
+      dispose: (_, service) => service.dispose(),
       child: MyApp(),
     ),
   );

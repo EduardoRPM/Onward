@@ -1,15 +1,19 @@
 // services/step_service.dart
 
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'AchievementService.dart';
 
 class StepService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  //final AchievementService _achievementService;
+  // Notificador de eventos de logro desbloqueado
+  final StreamController<String> _achievementController = StreamController<String>.broadcast();
+  Stream<String> get achievementStream => _achievementController.stream;
 
-  // StepService(this._achievementService);
   StepService();
+
   Future<void> saveSteps(String userId, int steps) async {
     final now = DateTime.now();
     final formattedDate = DateFormat('yyyy-MM-dd').format(now);
@@ -54,12 +58,15 @@ class StepService {
           'unlockedAt': FieldValue.serverTimestamp(),
         });
         print('Logro First Step desbloqueado: nivel 1');
+        _achievementController.add('¡Has desbloqueado el logro "First Step"!'); // <--- Notifica
+
       } else if (steps >= 30 && currentLevel < 2) {
         await docRef.update({
           'nivel': 2,
           'unlockedAt': FieldValue.serverTimestamp(),
         });
         print('Logro First Step actualizado a nivel 2');
+        _achievementController.add('¡Logro "First Step" actualizado a nivel 2!'); // <--- Notifica
       }
 
     } catch (e) {
@@ -95,6 +102,10 @@ class StepService {
       print('Error al obtener los pasos diarios: $e');
       return 0;
     }
+  }
+
+  void dispose() {
+    _achievementController.close();
   }
 
   Future<List<Map<String, dynamic>>> getAllSteps(String userId) async {
