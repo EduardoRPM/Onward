@@ -7,20 +7,19 @@ class AchievementService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   AchievementService();
 
-  
   Future<void> checkAndUnlockAchievements(String userId, int steps) async {
     final logrosCollection = _firestore
         .collection('Usuarios')
         .doc(userId)
         .collection('Logros');
 
-    final docRef = logrosCollection.doc('first_step');
-    final doc = await docRef.get();
+    // --- Logro First Step ---
+    final docRefFirst = logrosCollection.doc('first_step');
+    final docFirst = await docRefFirst.get();
 
     if (steps >= 10) {
-      if (!doc.exists) {
-        // Crear el logro nivel 1
-        await docRef.set({
+      if (!docFirst.exists) {
+        await docRefFirst.set({
           'title': 'First Step',
           'descripcion': 'Begin your walking journey',
           'nivel': 1,
@@ -28,10 +27,9 @@ class AchievementService {
         });
         print('Logro First Step desbloqueado: nivel 1');
       } else {
-        // Si ya existe, actualizar nivel si pasos >= 30 y nivel actual < 2
-        final currentLevel = doc.data()?['nivel'] ?? 0;
+        final currentLevel = docFirst.data()?['nivel'] ?? 0;
         if (steps >= 30 && currentLevel < 2) {
-          await docRef.update({
+          await docRefFirst.update({
             'nivel': 2,
             'unlockedAt': FieldValue.serverTimestamp(),
           });
@@ -39,7 +37,33 @@ class AchievementService {
         }
       }
     }
+
+    // --- Nuevo Logro: Explorer ---
+    final docRefExplorer = logrosCollection.doc('explorer');
+    final docExplorer = await docRefExplorer.get();
+
+    if (steps >= 50) {
+      if (!docExplorer.exists) {
+        await docRefExplorer.set({
+          'title': 'Explorer',
+          'descripcion': 'Walk like a pro',
+          'nivel': 1,
+          'unlockedAt': FieldValue.serverTimestamp(),
+        });
+        print('Logro Explorer desbloqueado: nivel 1');
+      } else {
+        final currentLevel = docExplorer.data()?['nivel'] ?? 0;
+        if (steps >= 120 && currentLevel < 2) {
+          await docRefExplorer.update({
+            'nivel': 2,
+            'unlockedAt': FieldValue.serverTimestamp(),
+          });
+          print('Logro Explorer actualizado a nivel 2');
+        }
+      }
+    }
   }
+
 
   Future<List<Achievement>> getUserAchievements(String userId) async {
     final firestore = FirebaseFirestore.instance;
@@ -98,6 +122,48 @@ class AchievementService {
 
     // Puedes repetir lo mismo para otros logros ("StreakMaster", etc.)
     // Si tienes más logros, agrega aquí más queries o usa get() para toda la colección.
+// --- Leer "Explorer" ---
+    final docRefExplorer = firestore
+        .collection('Usuarios')
+        .doc(userId)
+        .collection('Logros')
+        .doc('explorer');
+
+    final docSnapExplorer = await docRefExplorer.get();
+
+    int nivelExplorer = 0;
+    String titleExplorer = 'Explorer';
+    String descriptionExplorer = 'Walk like a pro';
+
+    if (docSnapExplorer.exists) {
+      final data = docSnapExplorer.data();
+      nivelExplorer = data?['nivel'] ?? 0;
+      titleExplorer = data?['title'] ?? titleExplorer;
+      descriptionExplorer = data?['descripcion'] ?? descriptionExplorer;
+    }
+
+    final explorerLevels = [
+      AchievementLevel(
+        level: 1,
+        description: 'Walk 50 steps',
+        completed: nivelExplorer >= 1,
+      ),
+      AchievementLevel(
+        level: 2,
+        description: 'Walk 120 steps',
+        completed: nivelExplorer >= 2,
+      ),
+    ];
+
+    achievements.add(
+      Achievement(
+        id: 'explorer',
+        title: titleExplorer,
+        description: descriptionExplorer,
+        icon: Icons.explore,
+        levels: explorerLevels,
+      ),
+    );
 
     return achievements;
   }
