@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 
+import '../constantes.dart';
+
 class CustomCircularProgressIndicator extends StatefulWidget {
   final int value;
   final double size;
@@ -94,7 +96,7 @@ class _CustomCircularProgressIndicatorState extends State<CustomCircularProgress
                 painter: CircleProgressPainter(
                   progress: _animation.value,
                   progressColor: widget.completed
-                      ? const Color(0xFFFBBF24)
+                      ? Color1
                       : const Color(0xFF10B981),
                   strokeWidth: widget.strokeWidth,
                   useGlow: widget.completed,
@@ -110,7 +112,7 @@ class _CustomCircularProgressIndicatorState extends State<CustomCircularProgress
                       fontSize: widget.size * 0.3,
                       fontWeight: FontWeight.w500,
                       color: widget.completed
-                          ? const Color(0xFFB45309)
+                          ? Color3
                           : const Color(0xFF1F2937),
                     ),
                   ),
@@ -124,7 +126,7 @@ class _CustomCircularProgressIndicatorState extends State<CustomCircularProgress
                     height: widget.size * 0.5,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Color(0xFFFBBF24),
+                      color: Color4,
                     ),
                     child: const Center(
                       child: Icon(

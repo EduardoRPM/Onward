@@ -1,10 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+
+import '../models/achievement.dart';
 
 class AchievementService {
-  final FirebaseFirestore _firestore;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  AchievementService();
 
-  AchievementService(this._firestore);
-
+  
   Future<void> checkAndUnlockAchievements(String userId, int steps) async {
     final logrosCollection = _firestore
         .collection('Usuarios')
@@ -36,6 +39,67 @@ class AchievementService {
         }
       }
     }
+  }
+
+  Future<List<Achievement>> getUserAchievements(String userId) async {
+    final firestore = FirebaseFirestore.instance;
+    final List<Achievement> achievements = [];
+
+    // 1. Leer el documento del logro "FirstStep"
+    final docRef = firestore
+        .collection('Usuarios')
+        .doc(userId)
+        .collection('Logros')
+        .doc('FirstStep');
+
+    final docSnap = await docRef.get();
+
+    // Valores default
+    int nivelActual = 0;
+    String title = 'First Step';
+    String description = 'Begin your walking journey';
+
+    if (docSnap.exists) {
+      final data = docSnap.data();
+      nivelActual = data?['nivel'] ?? 0;
+      title = data?['title'] ?? title;
+      description = data?['descripcion'] ?? description;
+    }
+
+    // 2. Definir los niveles del logro
+    final levels = [
+      AchievementLevel(
+        level: 1,
+        description: 'Walk 10 steps in a day',
+        completed: nivelActual >= 1,
+      ),
+      AchievementLevel(
+        level: 2,
+        description: 'Walk 30 steps in a day',
+        completed: nivelActual >= 2,
+      ),
+      AchievementLevel(
+        level: 3,
+        description: 'Walk 50 steps in a day',
+        completed: nivelActual >= 3,
+      ),
+    ];
+
+    achievements.add(
+      Achievement(
+        id: 'first-step',
+        title: title,
+        description: description,
+        icon: Icons.directions_walk,
+        levels: levels,
+      ),
+    );
+
+
+    // Puedes repetir lo mismo para otros logros ("StreakMaster", etc.)
+    // Si tienes más logros, agrega aquí más queries o usa get() para toda la colección.
+
+    return achievements;
   }
 }
 

@@ -68,6 +68,14 @@ class StepService {
         print('Logro First Step actualizado a nivel 2');
         _achievementController.add('¡Logro "First Step" actualizado a nivel 2!'); // <--- Notifica
       }
+      else if (steps >= 50 && currentLevel < 3) {
+        await docRef.update({
+          'nivel': 3,
+          'unlockedAt': FieldValue.serverTimestamp(),
+        });
+        print('Logro First Step actualizado a nivel 3');
+        _achievementController.add('¡Logro "First Step" actualizado a nivel 3!'); // <--- Notifica
+      }
 
     } catch (e) {
       print('Error al procesar logro First Step: $e');

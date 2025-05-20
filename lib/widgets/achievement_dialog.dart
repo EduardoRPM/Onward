@@ -84,7 +84,7 @@ class _AchievementDialogState extends State<AchievementDialog>
                       child: const Icon(
                         Icons.emoji_events,
                         size: 40,
-                        color: Colors.amber,
+                        color: Color4,
                       ),
                     ),
                   ),

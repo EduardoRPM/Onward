@@ -48,21 +48,82 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     // Escucha solo una vez para evitar múltiples suscripciones
     _achievementSubscription?.cancel();
     _achievementSubscription = stepService.achievementStream.listen((message) {
-      // Mostrar un AlertDialog cuando se reciba el evento
       showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (ctx) => AlertDialog(
-          title: Text("¡Logro desbloqueado!"),
-          content: Text(message),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          backgroundColor: Color5,
+          titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+          title: Row(
+            mainAxisSize: MainAxisSize.min, // <-- Hace el Row lo más compacto posible
+            children: [
+              const SizedBox(width: 10),
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown, // Escala el texto hacia abajo si es necesario
+                  child: Text(
+                    "¡Logro desbloqueado!",
+                    style: TextStyle(
+                      color: Color2,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 100, // Muy grande, pero FittedBox lo ajustará si es necesario
+                    ),
+                  ),
+                ),
+              ),
+
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Lottie.asset(
+                'assets/LottieAchievement.json',
+                width: 120,
+                height: 120,
+                repeat: true,
+              ),
+              const SizedBox(height: 18),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Color2,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          actionsAlignment: MainAxisAlignment.center,
           actions: [
-            TextButton(
-              child: Text("OK"),
+            ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color1,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 4,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+              ),
+              icon: Icon(Icons.check_circle_outline, color: Color5),
+              label: Text(
+                "¡Genial!",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               onPressed: () => Navigator.of(ctx).pop(),
             ),
           ],
         ),
       );
     });
+
+
+
   }
 
 

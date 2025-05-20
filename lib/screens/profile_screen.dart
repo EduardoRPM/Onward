@@ -242,68 +242,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         color: Colors.blue.shade700.withOpacity(0.3),
                       ),
 
-                      const SizedBox(height: 24),
-
-                      Column(
-                        children: [
-                          Text(
-                            stepData.steps.toString(),
-                            style: const TextStyle(
-                              fontSize: 80,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              height: 1,
-                            ),
-                          ),
-                          const Text(
-                            'Pasos',
-                            style: TextStyle(
-                              fontSize: 24,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.9),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Logros',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  'Has completado $achievements logros',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Icon(
-                              CupertinoIcons.star_fill,
-                              size: 28,
-                              color: Color3,
-                            ),
-                          ],
-                        ),
-                      ),
                     ],
                   ),
                 ),

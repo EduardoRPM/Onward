@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/services.dart';
 import 'package:onward/services/StepService.dart';
 import 'package:onward/welcome.dart';
 import 'package:provider/provider.dart';
 
+import 'notifiers/AchievementsNotifier.dart';
 import 'notifiers/step_notifier.dart';
 
 void main() async {
@@ -13,11 +15,23 @@ void main() async {
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: true,
   );
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp, // Solo modo vertical hacia arriba
+  ]);
 
   runApp(
-    Provider<StepService>(
-      create: (_) => StepService(),
-      dispose: (_, service) => service.dispose(),
+    MultiProvider(
+      providers: [
+        Provider<StepService>(
+          create: (_) => StepService(),
+          dispose: (_, service) => service.dispose(),
+        ),
+        ChangeNotifierProvider<AchievementsNotifier>(
+          create: (_) => AchievementsNotifier(''), // userId vacío al iniciar
+        ),
+
+      ],
+
       child: MyApp(),
     ),
   );

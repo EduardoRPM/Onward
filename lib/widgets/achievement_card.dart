@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../constantes.dart';
 import '../models/achievement.dart';
 import 'circular_progress_indicator.dart';
 
@@ -26,10 +27,10 @@ class _AchievementCardState extends State<AchievementCard> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       decoration: BoxDecoration(
-        color: isFullyCompleted ? const Color(0xFFFEFCE8) : Colors.white,
+        color: isFullyCompleted ? Color5 : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isFullyCompleted ? const Color(0xFFFDE68A) : const Color(0xFFE5E7EB),
+          color: isFullyCompleted ? Color5 : const Color(0xFFE5E7EB),
         ),
         boxShadow: [
           BoxShadow(
@@ -59,7 +60,7 @@ class _AchievementCardState extends State<AchievementCard> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: isFullyCompleted
-                          ? const Color(0xFFFEF3C7)
+                          ? Color3
                           : const Color(0xFFF3F4F6),
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -67,7 +68,8 @@ class _AchievementCardState extends State<AchievementCard> {
                       achievement.icon,
                       size: 24,
                       color: isFullyCompleted
-                          ? const Color(0xFFD97706)
+                          ? Color5
+
                           : Colors.black54,
                     ),
                   ),
@@ -168,11 +170,11 @@ class _AchievementCardState extends State<AchievementCard> {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: level.completed
-                  ? const Color(0xFFD1FAE5)
+                  ? Color1
                   : const Color(0xFFF3F4F6),
               border: Border.all(
                 color: level.completed
-                    ? const Color(0xFF10B981)
+                    ? Color1
                     : const Color(0xFFE5E7EB),
                 width: 1,
               ),
@@ -182,7 +184,7 @@ class _AchievementCardState extends State<AchievementCard> {
                   ? const Icon(
                 Icons.check,
                 size: 16,
-                color: Color(0xFF10B981),
+                color: Color1,
               )
                   : Text(
                 level.level.toString(),

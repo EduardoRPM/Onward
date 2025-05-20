@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:provider/provider.dart';
+import '../notifiers/AchievementsNotifier.dart';
 import '../widgets/achievement_list.dart';
 import 'package:flutter/services.dart';
 
@@ -24,19 +26,18 @@ class _AchievementsScreenState extends State<AchievementsScreen>
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+    Future.microtask(() =>
+        Provider.of<AchievementsNotifier>(context, listen: false)
+            .loadAchievements()
+    );
+    Provider.of<AchievementsNotifier>(context, listen: false).loadAchievements();
+
     _controller = AnimationController(vsync: this);
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    // Restaurar la orientación permitida al salir de la pantalla
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-      DeviceOrientation.landscapeLeft,
-      DeviceOrientation.landscapeRight,
-    ]);
     super.dispose();
   }
 
@@ -100,7 +101,7 @@ class _AchievementsScreenState extends State<AchievementsScreen>
             ),
           ),
           Positioned(
-            top: 40, // Distancia desde arriba (ajusta según tu diseño)
+            top: 40, // Distancia desde arriba
             left: 16, // Distancia desde la izquierda
             child: IconButton(
               icon: const Icon(CupertinoIcons.arrow_left_circle_fill,
